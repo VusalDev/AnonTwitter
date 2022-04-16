@@ -2,16 +2,31 @@ version: '3.1'
 
 services:
 
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - portainer-data:/data
+    ports:
+      - 9000:9000
+
   elasticsearch:
    container_name: elasticsearch
-   image: elasticsearch:8.1.2
+   image: elasticsearch:7.9.0
    ports:
     - 9200:9200
    volumes:
     - elasticsearch-data:/usr/share/elasticsearch/data
    environment:
-    - xpack.monitoring.enabled=true
+    - xpack.monitoring.enabled=false
     - xpack.watcher.enabled=false
+    - xpack.security.enabled=false
+    - xpack.ml.enabled=false
     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     - discovery.type=single-node
    networks:
@@ -19,7 +34,7 @@ services:
 
   kibana:
    container_name: kibana
-   image: kibana:8.1.2
+   image: kibana:7.9.0
    ports:
     - 5601:5601
    depends_on:
@@ -33,12 +48,16 @@ services:
     build:
       context: .
       dockerfile: YETwitter.Identity.Web/Dockerfile    
-#    depends_on:
-#      - sql.data
+    ports:
+      - 10001:80
+      - 11001:443
+    depends_on:
+     - elasticsearch
   
 networks:
   elastic:
     driver: bridge
 
 volumes:
+  portainer-data:
   elasticsearch-data:

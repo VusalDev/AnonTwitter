@@ -10,6 +10,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 
+using Serilog;
+using Serilog.Sinks.Elasticsearch;
+
 using System.Reflection;
 
 using YETwitter.Identity.Web.Configuration;
@@ -17,6 +20,7 @@ using YETwitter.Identity.Web.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
+var host = builder.Host;
 var services = builder.Services;
 
 // Add services to the container.
@@ -27,6 +31,22 @@ services.AddOptions<JwtOptions>()
     .ValidateOnStart();
 
 // logging
+host.UseSerilog((ctx, cfg) =>
+{
+    var environment = ctx.HostingEnvironment.EnvironmentName;
+    cfg.Enrich.FromLogContext()
+    .Enrich.WithMachineName()
+    .Enrich.WithEnvironmentName()
+    .Enrich.WithCorrelationId()
+    .WriteTo.Debug()
+    .WriteTo.Console()
+    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(configuration["ElasticConfiguration:Uri"]))
+    {
+        AutoRegisterTemplate = true,
+        IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}"
+    })
+    .ReadFrom.Configuration(configuration);
+});
 services.AddLogging().AddHttpLogging(opts => { });
 
 // For Entity Framework
@@ -82,6 +102,8 @@ services.AddDefaultCorrelationId(opts =>
 {
     opts.AddToLoggingScope = true;
     opts.UpdateTraceIdentifier = true;
+    opts.IncludeInResponse = true;
+    opts.AddToLoggingScope = true;
     opts.CorrelationIdGenerator = () => Guid.NewGuid().ToString("N");
 });
 
@@ -115,6 +137,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseSerilogRequestLogging(options =>
+{
+    // Attach additional properties to the request completion event
+    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+    {
+        diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
+        diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
+    };
+});
+
 app.UseHealthChecks("/health", new HealthCheckOptions
 {
     Predicate = r => r.Name.Contains("self")
@@ -126,9 +158,22 @@ app.UseProblemDetails();
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseAuthentication().UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+try
+{
+    Log.Information("Starting web host");
+    app.Run();
+    return 0;
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Host terminated unexpectedly");
+    return 1;
+}
+finally
+{
+    Log.CloseAndFlush();
+}
