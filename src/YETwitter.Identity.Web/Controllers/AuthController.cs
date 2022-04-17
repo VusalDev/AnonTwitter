@@ -86,7 +86,7 @@ public class AuthController : ControllerBase
                 detail: $"User creation failed! {result.Errors.FirstOrDefault()?.Description}"
             );
 
-        return Ok(new Response { Status = "Success", Message = "User created successfully!" });
+        return Ok(new ResponseModel { Status = "Success", Message = "User created successfully!" });
     }
 
     [Authorize]
@@ -104,7 +104,7 @@ public class AuthController : ControllerBase
                 detail: $"Password changing failed! {result.Errors.FirstOrDefault()?.Description}"
             );
 
-        return Ok(new Response { Status = "Success", Message = "Password changed successfully!" });
+        return Ok(new ResponseModel { Status = "Success", Message = "Password changed successfully!" });
     }
 
     private JwtSecurityToken GetToken(List<Claim> authClaims, bool isPermanent)
