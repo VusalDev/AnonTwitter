@@ -31,13 +31,21 @@ services:
    networks:
     - elastic
     
+  front.app:
+    build:
+      context: yetwitter-front-app
+      dockerfile: Dockerfile
+    ports:
+      - 10001:80
+      - 11001:443
+    
   identity.api:
     build:
       context: .
       dockerfile: YETwitter.Identity.Web/Dockerfile    
     ports:
-      - 10001:80
-      - 11001:443
+      - 10002:80
+      - 11002:443
     depends_on:
      - elasticsearch
   

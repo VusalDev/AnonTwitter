@@ -353,3 +353,4 @@ MigrationBackup/
 docker-compose/
 
 appsettings.Production.json
+environment.prod.ts
