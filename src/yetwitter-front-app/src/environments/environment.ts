@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   title: "yetwitter",
-  apiBaseUrl: "https://localhost:7263/api/v1"
+  apiBaseUrl: "https://localhost:44368/api"
 };
 
 /*

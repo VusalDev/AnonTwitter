@@ -18,7 +18,7 @@ export class AuthService {
   }
 
   login(username: string, password: string, rememberMe: boolean) {
-    return this.http.post<UserLogin>(this.buildUrl('/auth/login'), { username, password, rememberMe })
+    return this.http.post<UserLogin>(this.buildUrl('/v1/auth/login'), { username, password, rememberMe })
       .do(res => this.setSession)
       .shareReplay();
   }

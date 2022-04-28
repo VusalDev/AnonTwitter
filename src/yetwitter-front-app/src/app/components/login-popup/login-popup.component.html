@@ -19,6 +19,9 @@
                 <div class="form-control">
                     <input placeholder="Пароль" name="password" formControlName="password">
                 </div>
+                <div class="form-control">
+                    <span class="errorText">{{errorText}}</span>
+                </div>
             </div>
             <div mat-dialog-actions>
                 <button type="button" class="btn btn-default" (click)="login()">Войти</button>
