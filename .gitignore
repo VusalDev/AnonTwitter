@@ -354,3 +354,4 @@ docker-compose/
 
 appsettings.Production.json
 environment.prod.ts
+launchSettings.json

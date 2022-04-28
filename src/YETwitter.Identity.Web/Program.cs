@@ -1,3 +1,4 @@
+
 using CorrelationId;
 using CorrelationId.DependencyInjection;
 
@@ -10,13 +11,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 
-using Serilog;
-using Serilog.Sinks.Elasticsearch;
-
 using System.Reflection;
 
 using YETwitter.Identity.Web.Configuration;
 using YETwitter.Identity.Web.Data;
+using YETwitter.Web.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -31,23 +30,25 @@ services.AddOptions<JwtOptions>()
     .ValidateOnStart();
 
 // logging
-host.UseSerilog((ctx, cfg) =>
-{
-    var environment = ctx.HostingEnvironment.EnvironmentName;
-    cfg.Enrich.FromLogContext()
-    .Enrich.WithMachineName()
-    .Enrich.WithEnvironmentName()
-    .Enrich.WithCorrelationId()
-    .WriteTo.Debug()
-    .WriteTo.Console()
-    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(configuration["ElasticConfiguration:Uri"]))
-    {
-        AutoRegisterTemplate = true,
-        IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}"
-    })
-    .ReadFrom.Configuration(configuration);
-});
+host.UseSerilog(configuration, $"{Assembly.GetExecutingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{builder.Environment.EnvironmentName?.ToLower().Replace(".", "-")}");
 services.AddLogging().AddHttpLogging(opts => { });
+
+services.AddDefaultCorrelationId(opts =>
+{
+    opts.AddToLoggingScope = true;
+    opts.UpdateTraceIdentifier = true;
+    opts.IncludeInResponse = true;
+    opts.CorrelationIdGenerator = () => Guid.NewGuid().ToString("N");
+});
+
+services.AddProblemDetails(opts =>
+{
+#if DEBUG
+    // Control when an exception is included
+    opts.IncludeExceptionDetails = (ctx, ex) => true;
+    opts.ShouldLogUnhandledException = (ctx, ex, arg) => true;
+#endif
+});
 
 // For Entity Framework
 services
@@ -97,25 +98,7 @@ services
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret))
         };
     });
-
-services.AddDefaultCorrelationId(opts =>
-{
-    opts.AddToLoggingScope = true;
-    opts.UpdateTraceIdentifier = true;
-    opts.IncludeInResponse = true;
-    opts.AddToLoggingScope = true;
-    opts.CorrelationIdGenerator = () => Guid.NewGuid().ToString("N");
-});
-
 services.AddControllers();
-services.AddProblemDetails(opts =>
-{
-#if DEBUG
-    // Control when an exception is included
-    opts.IncludeExceptionDetails = (ctx, ex) => true;
-    opts.ShouldLogUnhandledException = (ctx, ex, arg) => true;
-#endif
-});
 
 services.AddHealthChecks()
     .AddCheck("self", () => HealthCheckResult.Healthy())
@@ -137,24 +120,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseSerilogRequestLogging(options =>
-{
-    // Attach additional properties to the request completion event
-    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
-    {
-        diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
-        diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
-    };
-});
+app.UseSerilogRequestLogging();
+
+app.UseCorrelationId();
+
+app.UseProblemDetails();
 
 app.UseHealthChecks("/health", new HealthCheckOptions
 {
     Predicate = r => r.Name.Contains("self")
 });
-
-app.UseCorrelationId();
-
-app.UseProblemDetails();
 
 app.UseHttpsRedirection();
 
@@ -164,16 +139,16 @@ app.MapControllers();
 
 try
 {
-    Log.Information("Starting web host");
+    Serilog.Log.Information("Starting web host");
     app.Run();
     return 0;
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "Host terminated unexpectedly");
+    Serilog.Log.Fatal(ex, "Host terminated unexpectedly");
     return 1;
 }
 finally
 {
-    Log.CloseAndFlush();
+    Serilog.Log.CloseAndFlush();
 }

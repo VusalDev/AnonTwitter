@@ -39,6 +39,14 @@ services:
       - 10001:80
       - 11001:443
     
+  apigateway:
+    build:
+      context: .
+      dockerfile: YETwitter.ApiGateway.Web/Dockerfile    
+    ports:
+      - 10100:80
+      - 11100:443
+    
   identity.api:
     build:
       context: .
