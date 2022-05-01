@@ -8,6 +8,7 @@ using System.Reflection;
 
 using Yarp.ReverseProxy.Transforms;
 
+using YETwitter.ApiGateway.Web.Configuration;
 using YETwitter.Web.Common;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,10 +51,12 @@ services
 
 services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
+    options.AddPolicy(CorsOptions.AppDefaultPolicy,
             builder =>
             {
-                builder.WithOrigins("http://localhost:5000", "http://localhost:4200")
+                var corsOptions = new CorsOptions();
+                configuration.GetSection("cors").Bind(corsOptions);
+                builder.WithOrigins(corsOptions.Origins)
                        .AllowAnyMethod()
                        .AllowAnyHeader()
                        .AllowCredentials()
@@ -77,7 +80,7 @@ app.UseHealthChecks("/health", new HealthCheckOptions
 app.MapGet("/", () => "Proxy");
 app.MapReverseProxy();
 
-app.UseCors("AllowAll");
+app.UseCors(CorsOptions.AppDefaultPolicy);
 
 try
 {
