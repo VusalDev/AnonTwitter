@@ -89,14 +89,15 @@ public class AuthController : AuthControllerBase
     }
 
     [Authorize]
-    [HttpPost]
-    [Route("change-password")]
     public override async Task<ActionResult<ResponseModel>> ChangePassword([FromBody] ChangePasswordModel model, CancellationToken cancellationToken = default)
     {
         model = model ?? throw new ArgumentNullException(nameof(model));
 
         var username = HttpContext.User?.Identity?.Name ?? throw new InvalidOperationException("User not logged in");
         var user = await _userManager.FindByNameAsync(username);
+        if(user == null) 
+            return Unauthorized();
+
         var result = await _userManager.ChangePasswordAsync(user, model.Password, model.NewPassword);
         if (!result.Succeeded)
             return Problem(
