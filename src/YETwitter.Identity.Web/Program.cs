@@ -30,7 +30,7 @@ services.AddOptions<JwtOptions>()
     .ValidateOnStart();
 
 // logging
-host.UseSerilog(configuration, $"{Assembly.GetExecutingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{builder.Environment.EnvironmentName?.ToLower().Replace(".", "-")}");
+host.UseSerilog(configuration, $"{Assembly.GetExecutingAssembly().GetName().Name?.ToLower().Replace(".", "-")}-{builder.Environment.EnvironmentName?.ToLower().Replace(".", "-")}");
 services.AddLogging().AddHttpLogging(opts => { });
 
 services.AddDefaultCorrelationId(opts =>
@@ -108,7 +108,7 @@ services.AddHealthChecks()
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
-services.AddSwaggerGen();
+//services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -116,8 +116,8 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    //app.UseSwagger();
+    //app.UseSwaggerUI();
 }
 
 app.UseSerilogRequestLogging();
@@ -152,3 +152,6 @@ finally
 {
     Serilog.Log.CloseAndFlush();
 }
+
+// unit testing
+public partial class Program { }

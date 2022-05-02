@@ -6,6 +6,7 @@ import 'rxjs/add/operator/shareReplay';
 import * as moment from "moment";
 import { UserLogin } from "../models/user-login";
 import { environment } from "src/environments/environment";
+import { IdentityServiceClient } from "../httpclients/identity-service";
 
 const tokenKey: string = 'ACCESS_TOKEN';
 const tokenExpirationKey: string = 'ACCESS_TOKEN_EXPIRES';
@@ -13,8 +14,10 @@ const tokenExpirationKey: string = 'ACCESS_TOKEN_EXPIRES';
 @Injectable()
 export class AuthService {
 
-  constructor(private http: HttpClient) {
+  httpClient:IdentityServiceClient.Client;
 
+  constructor(private http: HttpClient) {
+    this.httpClient = new IdentityServiceClient.Client(environment.apiBaseUrl);
   }
 
   login(username: string, password: string, rememberMe: boolean) {
@@ -23,16 +26,13 @@ export class AuthService {
       .shareReplay();
   }
 
-  private setSession(authResult: TokenData) {
-    const expiresAt = moment().add(authResult.expiration, 'second');
-
-    localStorage.setItem(tokenKey, authResult.token);
-    localStorage.setItem(tokenExpirationKey, JSON.stringify(expiresAt.valueOf()));
-  }
-
   logout() {
     localStorage.removeItem(tokenKey);
     localStorage.removeItem(tokenExpirationKey);
+  }
+
+  register(username: string, password: string) {
+    return this.httpClient.register(new IdentityServiceClient.RegisterModel({ username, password }));
   }
 
   public isLoggedIn() {
@@ -46,12 +46,20 @@ export class AuthService {
     return moment(expiresAt);
   }
 
-  buildUrl(path:string) {
+
+  private setSession(authResult: TokenData) {
+    const expiresAt = moment().add(authResult.validTo, 'second');
+
+    localStorage.setItem(tokenKey, authResult.token);
+    localStorage.setItem(tokenExpirationKey, JSON.stringify(expiresAt.valueOf()));
+  }
+
+  private buildUrl(path:string) {
     return environment.apiBaseUrl + path;
   }
 }
 
 class TokenData {
   token!: string;
-  expiration!: string;
+  validTo!: string;
 }

@@ -12,11 +12,10 @@ using YETwitter.Identity.Web.Models;
 
 namespace YETwitter.Identity.Web.Controllers;
 
-[Route("api/v1/auth")]
 [Produces("application/json")]
 [Consumes("application/json")]
 [ApiController]
-public class AuthController : ControllerBase
+public class AuthController : AuthControllerBase
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly JwtOptions _jwtOptions;
@@ -29,10 +28,11 @@ public class AuthController : ControllerBase
         _jwtOptions = jwtOpts.Value;
     }
 
-    [HttpPost]
-    [Route("login")]
-    public async Task<IActionResult> Login([FromBody] LoginModel model)
+
+    public override async Task<ActionResult<TokenDataModel>> Login([FromBody] LoginModel? model, CancellationToken cancellationToken = default)
     {
+        model = model ?? throw new ArgumentNullException(nameof(model));
+
         var user = await _userManager.FindByNameAsync(model.Username);
         if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
         {
@@ -51,60 +51,61 @@ public class AuthController : ControllerBase
 
             var token = GetToken(authClaims, model.RememberMe);
 
-            return Ok(new
+            return Ok(new TokenDataModel
             {
-                token = new JwtSecurityTokenHandler().WriteToken(token),
-                expiration = token.ValidTo
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                ValidTo = token.ValidTo
             });
         }
         return Unauthorized();
     }
 
-    [HttpPost]
-    [Route("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterModel model)
+    public override async Task<ActionResult<ResponseModel>> Register([FromBody] RegisterModel? model, CancellationToken cancellationToken = default)
     {
-        var userExists = await _userManager.FindByNameAsync(model.Username) ?? await _userManager.FindByEmailAsync(model.Email);
+        model = model ?? throw new ArgumentNullException(nameof(model));
+
+        var userExists = await _userManager.FindByNameAsync(model.Username);
         if (userExists != null)
             return Problem(
                 statusCode: StatusCodes.Status500InternalServerError,
                 title: "User creation failed",
-                detail: "User already exists!"
+                detail: "User already exists"
             );
 
-        IdentityUser user = new()
+        var user = new IdentityUser()
         {
-            Email = model.Email,
+            UserName = model.Username,
             SecurityStamp = Guid.NewGuid().ToString(),
-            UserName = model.Username
         };
         var result = await _userManager.CreateAsync(user, model.Password);
         if (!result.Succeeded)
             return Problem(
                 statusCode: StatusCodes.Status500InternalServerError,
                 title: "User creation failed",
-                detail: $"User creation failed! {result.Errors.FirstOrDefault()?.Description}"
+                detail: result.Errors.FirstOrDefault()?.Description
             );
 
-        return Ok(new ResponseModel { Status = "Success", Message = "User created successfully!" });
+        return Ok(new ResponseModel { Status = "Success", Message = "User created successfully" });
     }
 
     [Authorize]
     [HttpPost]
     [Route("change-password")]
-    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordModel model)
+    public override async Task<ActionResult<ResponseModel>> ChangePassword([FromBody] ChangePasswordModel model, CancellationToken cancellationToken = default)
     {
-        var username = HttpContext.User?.Identity?.Name ?? throw new ArgumentNullException("username");
+        model = model ?? throw new ArgumentNullException(nameof(model));
+
+        var username = HttpContext.User?.Identity?.Name ?? throw new InvalidOperationException("User not logged in");
         var user = await _userManager.FindByNameAsync(username);
         var result = await _userManager.ChangePasswordAsync(user, model.Password, model.NewPassword);
         if (!result.Succeeded)
             return Problem(
                 statusCode: StatusCodes.Status500InternalServerError,
                 title: "Password changing failed",
-                detail: $"Password changing failed! {result.Errors.FirstOrDefault()?.Description}"
+                detail: result.Errors.FirstOrDefault()?.Description
             );
 
-        return Ok(new ResponseModel { Status = "Success", Message = "Password changed successfully!" });
+        return Ok(new ResponseModel { Status = "Success", Message = "Password changed successfully" });
     }
 
     private JwtSecurityToken GetToken(List<Claim> authClaims, bool isPermanent)
@@ -122,4 +123,5 @@ public class AuthController : ControllerBase
 
         return token;
     }
+
 }

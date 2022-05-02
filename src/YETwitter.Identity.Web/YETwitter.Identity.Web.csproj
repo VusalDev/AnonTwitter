@@ -22,16 +22,27 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
         <PackageReference Include="Serilog.Enrichers.CorrelationId" Version="3.0.1" />
         <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
         <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
         <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="8.4.1" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\YETwitter.Web.Common\YETwitter.Web.Common.csproj" />
     </ItemGroup>
+
+    <PropertyGroup>
+        <NSwagConfigFilePath>api-docs\identity-api-swagger.yaml</NSwagConfigFilePath>
+        <CsharpClientOutDir>Controllers\AppApiClient.cs</CsharpClientOutDir>
+    </PropertyGroup>
+
+    <Target Name="CsharpClientGeneration" AfterTargets="SwaggerToFile">
+        <Exec Command="$(NSwagExe_net60) run $(NSwagConfigFilePath) /variables:OutDir=$(SolutionDir)$(CsharpClientOutDir)" />
+    </Target>
+
+
 
 </Project>

@@ -6,12 +6,16 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
 
+using YETwitter.Web.Common.Configuration;
+
 namespace YETwitter.Web.Common
 {
     public static class StartupExtensions
     {
         public static IHostBuilder UseSerilog(this IHostBuilder host, ConfigurationManager configuration, string indexFormat)
         {
+            var elkOpts = new ElasticsearchOptions();
+            configuration.GetSection("ElasticConfiguration").Bind(elkOpts);
             return host.UseSerilog((ctx, cfg) =>
             {
                 cfg.Enrich.FromLogContext()
@@ -20,9 +24,9 @@ namespace YETwitter.Web.Common
                 .Enrich.WithCorrelationId()
                 .WriteTo.Debug()
                 .WriteTo.Console();
-                if (configuration["ElasticConfiguration:Uri"] != null)
+                if (elkOpts.Uri != null)
                 {
-                    cfg.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(configuration["ElasticConfiguration:Uri"]))
+                    cfg.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(elkOpts.Uri)
                     {
                         AutoRegisterTemplate = true,
                         IndexFormat = indexFormat

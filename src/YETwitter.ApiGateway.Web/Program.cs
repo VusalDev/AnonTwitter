@@ -17,7 +17,7 @@ var host = builder.Host;
 var services = builder.Services;
 
 // logging
-host.UseSerilog(configuration, $"{Assembly.GetExecutingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{builder.Environment.EnvironmentName?.ToLower().Replace(".", "-")}");
+host.UseSerilog(configuration, $"{Assembly.GetExecutingAssembly().GetName().Name?.ToLower().Replace(".", "-")}-{builder.Environment.EnvironmentName?.ToLower().Replace(".", "-")}");
 services.AddLogging().AddHttpLogging(opts => { });
 
 services.AddDefaultCorrelationId(opts =>

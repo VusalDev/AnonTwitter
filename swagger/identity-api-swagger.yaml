@@ -6,13 +6,19 @@ tags:
   - name: Identity API
     description: >
       Сервис авторизации и хранения информации пользователей
+      
+servers:
+  - url: 'https://localhost/api/v1'
+    description: URL for testing
+
 paths:
-  /api/v1/auth/login:
+  /auth/login:
     post:
       tags:
         - auth
       operationId: login
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -23,19 +29,26 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResponseModel'
+                $ref: '#/components/schemas/TokenDataModel'
+        '400':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorProblemDetails'
         '500':
           description: Ошибка при выполнении операции
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
-  /api/v1/auth/register:
+  /auth/register:
     post:
       tags:
         - auth
       operationId: register
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -47,18 +60,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResponseModel'
+        '400':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorProblemDetails'
         '500':
           description: Ошибка при выполнении операции
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
-  /api/v1/auth/change-password:
+  /auth/change-password:
     post:
       tags:
         - auth
       operationId: changePassword
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -70,6 +90,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResponseModel'
+        '400':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorProblemDetails'
         '500':
           description: Ошибка при выполнении операции
           content:
@@ -87,43 +113,41 @@ components:
         password:
           type: string
           format: password
+          minLength: 6
         newPassword:
           type: string
           format: password
+          minLength: 6
       additionalProperties: false
     LoginModel:
       required:
-        - email
-        - password
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-        password:
-          type: string
-          format: password
-        rememberMe:
-          type: boolean
-        returnUrl:
-          type: string
-          nullable: true
-      additionalProperties: false
-    RegisterModel:
-      required:
-        - email
-        - password
         - username
+        - password
       type: object
       properties:
         username:
           type: string
-        email:
-          type: string
-          format: email
+          minLength: 2
         password:
           type: string
           format: password
+          minLength: 6
+        rememberMe:
+          type: boolean
+      additionalProperties: false
+    RegisterModel:
+      required:
+        - username
+        - password
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 2
+        password:
+          type: string
+          format: password
+          minLength: 6
       additionalProperties: false
     ResponseModel:
       required:
@@ -134,6 +158,18 @@ components:
           type: string
         message:
           type: string
+      additionalProperties: false
+    TokenDataModel:
+      required:
+        - token
+        - validTo
+      type: object
+      properties:
+        token:
+          type: string
+        validTo:
+          type: string
+          format: date
       additionalProperties: false
     ProblemDetails:
       required:
@@ -151,4 +187,12 @@ components:
           type: integer
         traceId:
           type: string
+      additionalProperties: false
+    ErrorProblemDetails:
+      allOf:
+        - $ref: '#/components/schemas/ProblemDetails'
+        - type: object
+          properties:
+            errors:
+              type: object
       additionalProperties: false
