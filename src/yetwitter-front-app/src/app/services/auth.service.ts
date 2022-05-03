@@ -1,10 +1,9 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from 'rxjs';
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/shareReplay';
+// import 'rxjs/add/operator/do';
+// import 'rxjs/add/operator/shareReplay';
 import * as moment from "moment";
-import { UserLogin } from "../models/user-login";
 import { environment } from "src/environments/environment";
 import { IdentityServiceClient } from "../httpclients/identity-service";
 
@@ -21,9 +20,10 @@ export class AuthService {
   }
 
   login(username: string, password: string, rememberMe: boolean) {
-    return this.http.post<UserLogin>(this.buildUrl('/v1/auth/login'), { username, password, rememberMe })
-      .do(res => this.setSession)
-      .shareReplay();
+    // return this.http.post<UserLogin>(this.buildUrl('/v1/auth/login'), { username, password, rememberMe })
+    //   .do(res => this.setSession)
+    //   .shareReplay();
+    return this.httpClient.login(new IdentityServiceClient.LoginModel({ username, password, rememberMe }));
   }
 
   logout() {
@@ -47,8 +47,8 @@ export class AuthService {
   }
 
 
-  private setSession(authResult: TokenData) {
-    const expiresAt = moment().add(authResult.validTo, 'second');
+  private setSession(authResult: IdentityServiceClient.TokenDataModel) {
+    const expiresAt = moment().add(authResult.validTo.getTime(), 'second');
 
     localStorage.setItem(tokenKey, authResult.token);
     localStorage.setItem(tokenExpirationKey, JSON.stringify(expiresAt.valueOf()));
@@ -57,9 +57,4 @@ export class AuthService {
   private buildUrl(path:string) {
     return environment.apiBaseUrl + path;
   }
-}
-
-class TokenData {
-  token!: string;
-  validTo!: string;
 }

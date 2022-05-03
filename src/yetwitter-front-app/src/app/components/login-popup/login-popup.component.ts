@@ -35,7 +35,7 @@ export class LoginPopupComponent implements OnInit {
 
     if (val.username && val.password) {
       this.authService.login(val.username, val.password, true)
-        .subscribe(
+        .then(
           data => {
             console.log("User is logged in");
             this.dialogRef.close();
