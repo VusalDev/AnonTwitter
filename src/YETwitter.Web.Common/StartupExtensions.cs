@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 using Serilog;
+using Serilog.Exceptions;
 using Serilog.Sinks.Elasticsearch;
 
 using YETwitter.Web.Common.Configuration;
@@ -18,10 +19,12 @@ namespace YETwitter.Web.Common
             configuration.GetSection("ElasticConfiguration").Bind(elkOpts);
             return host.UseSerilog((ctx, cfg) =>
             {
-                cfg.Enrich.FromLogContext()
+                cfg
+                .Enrich.FromLogContext()
                 .Enrich.WithMachineName()
                 .Enrich.WithEnvironmentName()
                 .Enrich.WithCorrelationId()
+                .Enrich.WithExceptionDetails()
                 .WriteTo.Debug()
                 .WriteTo.Console();
                 if (elkOpts.Uri != null)

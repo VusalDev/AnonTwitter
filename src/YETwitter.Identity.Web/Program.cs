@@ -30,7 +30,7 @@ services.AddOptions<JwtOptions>()
     .ValidateOnStart();
 
 // logging
-host.UseSerilog(configuration, $"{Assembly.GetExecutingAssembly().GetName().Name?.ToLower().Replace(".", "-")}-{builder.Environment.EnvironmentName?.ToLower().Replace(".", "-")}");
+host.UseSerilog(configuration, $"{Assembly.GetExecutingAssembly().GetName().Name?.ToLower().Replace(".", "-")}");
 services.AddLogging().AddHttpLogging(opts => { });
 
 services.AddDefaultCorrelationId(opts =>
@@ -107,7 +107,7 @@ services.AddHealthChecks()
         tags: new string[] { "IdentityDB" });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-services.AddEndpointsApiExplorer();
+//services.AddEndpointsApiExplorer();
 //services.AddSwaggerGen();
 
 var app = builder.Build();

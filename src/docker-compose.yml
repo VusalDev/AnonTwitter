@@ -10,14 +10,12 @@ services:
    volumes:
     - elasticsearch-data:/usr/share/elasticsearch/data
    environment:
-    - xpack.monitoring.enabled=false
-    - xpack.watcher.enabled=false
+    - xpack.monitoring.enabled=true
     - xpack.security.enabled=false
-    - xpack.ml.enabled=false
     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     - discovery.type=single-node
    networks:
-    - elastic
+    - yetwitter
 
   kibana:
    container_name: kibana
@@ -29,36 +27,47 @@ services:
    environment:
     - ELASTICSEARCH_URL=http://localhost:9200
    networks:
-    - elastic
+    - yetwitter
     
   front.app:
+    container_name: front
     build:
       context: yetwitter-front-app
       dockerfile: Dockerfile
     ports:
       - 10001:80
-      - 11001:443
+      # - 11001:443
+    networks:
+     - yetwitter
     
   apigateway:
+    container_name: apigateway
     build:
       context: .
       dockerfile: YETwitter.ApiGateway.Web/Dockerfile    
     ports:
       - 10100:80
-      - 11100:443
+      # - 11100:443
+    depends_on:
+     - elasticsearch
+    networks:
+     - yetwitter
     
   identity.api:
+    container_name: identity-api
     build:
       context: .
       dockerfile: YETwitter.Identity.Web/Dockerfile    
     ports:
       - 10002:80
-      - 11002:443
+      # - 11002:443
     depends_on:
      - elasticsearch
+    networks:
+     - yetwitter
   
 networks:
-  elastic:
+  yetwitter:
     driver: bridge
 
 volumes:
