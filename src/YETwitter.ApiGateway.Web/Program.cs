@@ -72,12 +72,9 @@ app.UseSerilogRequestLogging();
 
 app.UseCorrelationId();
 
-app.UseHealthChecks("/health", new HealthCheckOptions
-{
-    Predicate = r => r.Name.Contains("self")
-});
+app.UseHealthChecks("/health");
 
-app.MapGet("/", () => "Proxy");
+//app.MapGet("/", () => "Proxy");
 app.MapReverseProxy();
 
 app.UseCors(CorsOptions.AppDefaultPolicy);
