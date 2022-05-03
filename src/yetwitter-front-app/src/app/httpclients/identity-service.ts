@@ -8,23 +8,21 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-export module IdentityServiceClient {
-
-export class Client {
+export class AuthClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         this.http = http ? http : window as any;
-        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost/api/v1";
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost/api";
     }
 
     /**
      * @return Успешный вход
      */
     login(body: LoginModel): Promise<TokenDataModel> {
-        let url_ = this.baseUrl + "/auth/login";
+        let url_ = this.baseUrl + "/v1/auth/login";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -76,10 +74,10 @@ export class Client {
     }
 
     /**
-     * @return Успешный вход
+     * @return Успешная операция
      */
     register(body: RegisterModel): Promise<ResponseModel> {
-        let url_ = this.baseUrl + "/auth/register";
+        let url_ = this.baseUrl + "/v1/auth/register";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -131,10 +129,10 @@ export class Client {
     }
 
     /**
-     * @return Успешный вход
+     * @return Успешная операция
      */
     changePassword(body: ChangePasswordModel): Promise<ResponseModel> {
-        let url_ = this.baseUrl + "/auth/change-password";
+        let url_ = this.baseUrl + "/v1/auth/change-password";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -393,7 +391,7 @@ export interface ITokenDataModel {
 export class ProblemDetails implements IProblemDetails {
     type?: string;
     title!: string;
-    details?: string;
+    detail?: string;
     status!: number;
     traceId?: string;
 
@@ -410,7 +408,7 @@ export class ProblemDetails implements IProblemDetails {
         if (_data) {
             this.type = _data["type"];
             this.title = _data["title"];
-            this.details = _data["details"];
+            this.detail = _data["detail"];
             this.status = _data["status"];
             this.traceId = _data["traceId"];
         }
@@ -427,7 +425,7 @@ export class ProblemDetails implements IProblemDetails {
         data = typeof data === 'object' ? data : {};
         data["type"] = this.type;
         data["title"] = this.title;
-        data["details"] = this.details;
+        data["detail"] = this.detail;
         data["status"] = this.status;
         data["traceId"] = this.traceId;
         return data;
@@ -437,7 +435,7 @@ export class ProblemDetails implements IProblemDetails {
 export interface IProblemDetails {
     type?: string;
     title: string;
-    details?: string;
+    detail?: string;
     status: number;
     traceId?: string;
 }
@@ -510,6 +508,4 @@ function throwException(message: string, status: number, response: string, heade
         throw result;
     else
         throw new ApiException(message, status, response, headers, null);
-}
-
 }

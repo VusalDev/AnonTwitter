@@ -18,20 +18,20 @@ namespace YETwitter.Identity.Web.Controllers
     using System = global::System;
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.15.10.0 (NJsonSchema v10.6.10.0 (Newtonsoft.Json v13.0.0.0))")]
-    [Microsoft.AspNetCore.Mvc.Route("api/v1")]
+    [Microsoft.AspNetCore.Mvc.Route("api")]
 
     public abstract class AuthControllerBase : Microsoft.AspNetCore.Mvc.ControllerBase
     {
         /// <returns>Успешный вход</returns>
-        [Microsoft.AspNetCore.Mvc.HttpPost, Microsoft.AspNetCore.Mvc.Route("auth/login", Name = "login")]
+        [Microsoft.AspNetCore.Mvc.HttpPost, Microsoft.AspNetCore.Mvc.Route("v1/auth/login")]
         public abstract System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.ActionResult<TokenDataModel>> Login([Microsoft.AspNetCore.Mvc.FromBody] [Microsoft.AspNetCore.Mvc.ModelBinding.BindRequired] LoginModel body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
-        /// <returns>Успешный вход</returns>
-        [Microsoft.AspNetCore.Mvc.HttpPost, Microsoft.AspNetCore.Mvc.Route("auth/register", Name = "register")]
+        /// <returns>Успешная операция</returns>
+        [Microsoft.AspNetCore.Mvc.HttpPost, Microsoft.AspNetCore.Mvc.Route("v1/auth/register")]
         public abstract System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.ActionResult<ResponseModel>> Register([Microsoft.AspNetCore.Mvc.FromBody] [Microsoft.AspNetCore.Mvc.ModelBinding.BindRequired] RegisterModel body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
-        /// <returns>Успешный вход</returns>
-        [Microsoft.AspNetCore.Mvc.HttpPost, Microsoft.AspNetCore.Mvc.Route("auth/change-password", Name = "changePassword")]
+        /// <returns>Успешная операция</returns>
+        [Microsoft.AspNetCore.Mvc.HttpPost, Microsoft.AspNetCore.Mvc.Route("v1/auth/change-password")]
         public abstract System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.ActionResult<ResponseModel>> ChangePassword([Microsoft.AspNetCore.Mvc.FromBody] [Microsoft.AspNetCore.Mvc.ModelBinding.BindRequired] ChangePasswordModel body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }

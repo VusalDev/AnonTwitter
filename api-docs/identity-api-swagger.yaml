@@ -8,11 +8,11 @@ tags:
       Сервис авторизации и хранения информации пользователей
       
 servers:
-  - url: 'https://localhost/api/v1'
+  - url: 'https://localhost/api'
     description: URL for testing
 
 paths:
-  /auth/login:
+  /v1/auth/login:
     post:
       tags:
         - auth
@@ -42,7 +42,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
-  /auth/register:
+  /v1/auth/register:
     post:
       tags:
         - auth
@@ -55,7 +55,7 @@ paths:
               $ref: '#/components/schemas/RegisterModel'
       responses:
         '200':
-          description: Успешный вход
+          description: Успешная операция
           content:
             application/json:
               schema:
@@ -72,7 +72,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
-  /auth/change-password:
+  /v1/auth/change-password:
     post:
       tags:
         - auth
@@ -85,7 +85,7 @@ paths:
               $ref: '#/components/schemas/ChangePasswordModel'
       responses:
         '200':
-          description: Успешный вход
+          description: Успешная операция
           content:
             application/json:
               schema:
@@ -181,7 +181,7 @@ components:
           type: string
         title:
           type: string
-        details:
+        detail:
           type: string
         status:
           type: integer

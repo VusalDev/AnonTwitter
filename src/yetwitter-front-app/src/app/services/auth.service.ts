@@ -1,11 +1,7 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable } from 'rxjs';
-// import 'rxjs/add/operator/do';
-// import 'rxjs/add/operator/shareReplay';
-import * as moment from "moment";
 import { environment } from "src/environments/environment";
-import { IdentityServiceClient } from "../httpclients/identity-service";
+import { AuthClient, LoginModel, RegisterModel, TokenDataModel } from "../httpclients/identity-service";
 
 const tokenKey: string = 'ACCESS_TOKEN';
 const tokenExpirationKey: string = 'ACCESS_TOKEN_EXPIRES';
@@ -13,17 +9,17 @@ const tokenExpirationKey: string = 'ACCESS_TOKEN_EXPIRES';
 @Injectable()
 export class AuthService {
 
-  httpClient:IdentityServiceClient.Client;
+  authClient: AuthClient;
 
   constructor(private http: HttpClient) {
-    this.httpClient = new IdentityServiceClient.Client(environment.apiBaseUrl);
+    this.authClient = new AuthClient(environment.apiBaseUrl);
   }
 
   login(username: string, password: string, rememberMe: boolean) {
-    // return this.http.post<UserLogin>(this.buildUrl('/v1/auth/login'), { username, password, rememberMe })
-    //   .do(res => this.setSession)
-    //   .shareReplay();
-    return this.httpClient.login(new IdentityServiceClient.LoginModel({ username, password, rememberMe }));
+    return this.authClient.login(new LoginModel({ username, password, rememberMe }))
+    .then(data => {
+      this.setSession(data);
+    });
   }
 
   logout() {
@@ -32,29 +28,23 @@ export class AuthService {
   }
 
   register(username: string, password: string) {
-    return this.httpClient.register(new IdentityServiceClient.RegisterModel({ username, password }));
+    return this.authClient.register(new RegisterModel({ username, password }));
   }
 
   public isLoggedIn() {
-    return moment().isBefore(this.getExpiration());
+    return new Date() < this.getExpiration();
   }
 
 
   getExpiration() {
-    const expiration = localStorage.getItem(tokenExpirationKey) ?? "";
-    const expiresAt = JSON.parse(expiration);
-    return moment(expiresAt);
+    const expiration = Number(localStorage.getItem(tokenExpirationKey)) ?? 0;
+    return new Date(expiration);
   }
 
 
-  private setSession(authResult: IdentityServiceClient.TokenDataModel) {
-    const expiresAt = moment().add(authResult.validTo.getTime(), 'second');
-
+  private setSession(authResult: TokenDataModel) {
+    const validTo =authResult.validTo.getTime();
     localStorage.setItem(tokenKey, authResult.token);
-    localStorage.setItem(tokenExpirationKey, JSON.stringify(expiresAt.valueOf()));
-  }
-
-  private buildUrl(path:string) {
-    return environment.apiBaseUrl + path;
+    localStorage.setItem(tokenExpirationKey, validTo.toString());
   }
 }

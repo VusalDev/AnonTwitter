@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
-import { ProblemDetails } from 'src/app/models/problem-details';
+import { ApiException, ProblemDetails } from 'src/app/httpclients/identity-service';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -28,13 +28,15 @@ export class LoginPopupComponent implements OnInit {
 
   ngOnInit() {
     //this.form.reset(); 
+var expiration = this.authService.getExpiration();
+var isLogged = this.authService.isLoggedIn();
   }
 
   login() {
     const val = this.form.value;
 
     if (val.username && val.password) {
-      this.authService.login(val.username, val.password, true)
+      this.authService.login(val.username, val.password, false)
         .then(
           data => {
             console.log("User is logged in");
@@ -42,8 +44,13 @@ export class LoginPopupComponent implements OnInit {
           },
           error => {
             console.log(error);
-            let details = error.error as ProblemDetails
-            this.errorText = details.title;
+            if (error instanceof ApiException) {
+              this.errorText = (error as ApiException).message;
+            } 
+            else if (error instanceof ProblemDetails) {
+              let details = error as ProblemDetails
+              this.errorText = details.title + (details.detail != null ? ": " + details.detail : "");
+            }
           });
     }
   }

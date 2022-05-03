@@ -3,7 +3,7 @@
   "defaultVariables": null,
   "documentGenerator": {
     "fromDocument": {
-      "url": "identity-api-swagger.yaml",
+      "url": "post-api-swagger.yaml",
       "output": null,
       "newLineBehavior": "Auto"
     }
@@ -68,7 +68,7 @@
       "enumNameGeneratorType": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "../src/yetwitter-front-app/src/app/httpclients/identity-service.ts",
+      "output": "../src/yetwitter-front-app/src/app/httpclients/posts-service.ts",
       "newLineBehavior": "Auto"
     },
     "openApiToCSharpController": {
@@ -81,7 +81,7 @@
       "routeNamingStrategy": "None",
       "basePath": null,
       "className": "{controller}",
-      "operationGenerationMode": "MultipleClientsFromFirstTagAndOperationId",
+      "operationGenerationMode": "MultipleClientsFromFirstTagAndPathSegments",
       "additionalNamespaceUsages": [],
       "additionalContractNamespaceUsages": [],
       "generateOptionalParameters": true,
@@ -95,7 +95,7 @@
       "wrapResponseMethods": [],
       "generateResponseClasses": true,
       "responseClass": "SwaggerResponse",
-      "namespace": "YETwitter.Identity.Web.Controllers",
+      "namespace": "YETwitter.Posts.Web.Controllers",
       "requiredPropertiesMustBeDefined": true,
       "dateType": "System.DateTime",
       "jsonConverters": null,
@@ -135,7 +135,7 @@
       "enumNameGeneratorType": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "../src/YETwitter.Identity.Web/Controllers/ControllerBase.gen.cs",
+      "output": "../src/YETwitter.Posts.Web/Controllers/ControllerBase.gen.cs",
       "newLineBehavior": "Auto"
     }
   }
