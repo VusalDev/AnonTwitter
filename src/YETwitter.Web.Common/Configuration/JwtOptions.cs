@@ -1,4 +1,6 @@
-﻿namespace YETwitter.Identity.Web.Configuration;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace YETwitter.Web.Common.Configuration;
 
 public class JwtOptions
 {

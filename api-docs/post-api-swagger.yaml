@@ -12,7 +12,48 @@ servers:
     description: URL for testing
 
 paths:
-  /v1/post:
+  /v1/post:                
+    get:
+      tags:
+        - post
+      operationId: queryPosts
+      summary: Искать записи
+      parameters:
+        - name: query
+          in: query
+          description: Поисковая строка
+          schema:
+            type: string
+        - name: userId
+          in: query
+          description: Идентификатор пользователя
+          schema:
+            type: string
+        - name: hashTag
+          in: query
+          schema:
+            $ref: "#/components/schemas/HashTag"
+        - $ref: "#/components/parameters/pageSkip"
+      responses:
+        '200':
+          description: Успешная операция
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryPostResponseModel'
+        '400':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorProblemDetails'
+        '500':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+
     put:
       tags:
         - post
@@ -43,6 +84,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+                                
+  /v1/post/{id}:
+    get:
+      tags:
+        - post
+      operationId: getById
+      summary: Получить запись
+      parameters:
+        - $ref: "#/components/parameters/postId"
+      responses:
+        '200':
+          description: Успешная операция
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorProblemDetails'
+        '500':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
 
     delete:
       tags:
@@ -50,13 +119,7 @@ paths:
       operationId: delete
       summary: Удалить запись
       parameters:
-        - name: postId
-          in: path
-          description: Идентификатор записи
-          required: true
-          schema:
-            type: string
-            maxLength: 36
+        - $ref: "#/components/parameters/postId"
       responses:
         '204':
           description: Успешная операция
@@ -72,110 +135,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
-                
-    get:
-      tags:
-        - post
-      operationId: queryPosts
-      summary: Искать записи
-      parameters:
-        - name: query
-          in: path
-          description: Поисковая строка
-          required: true
-          schema:
-            type: string
-        - $ref: "#/components/parameters/pageLimit"
-        - $ref: "#/components/parameters/pageSkip"
-      responses:
-        '200':
-          description: Успешная операция
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QueryPostResponseModel'
-        '400':
-          description: Ошибка при выполнении операции
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorProblemDetails'
-        '500':
-          description: Ошибка при выполнении операции
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
-                
-  /v1/post/{userId}:
-    get:
-      tags:
-        - post
-      operationId: getPostsByUser
-      summary: Получить записи пользователя
-      parameters:
-        - name: userId
-          in: path
-          description: Идентификатор пользователя
-          required: true
-          schema:
-            type: string
-        - $ref: "#/components/parameters/pageLimit"
-        - $ref: "#/components/parameters/pageSkip"
-      responses:
-        '200':
-          description: Успешная операция
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QueryPostResponseModel'
-        '400':
-          description: Ошибка при выполнении операции
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorProblemDetails'
-        '500':
-          description: Ошибка при выполнении операции
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
 
-  /v1/post/{hashTag}:
-    get:
-      tags:
-        - post
-      operationId: getPostsByHashTag
-      summary: Получить записи по тегу
-      parameters:
-        - name: hashTag
-          in: path
-          required: true
-          schema:
-            $ref: "#/components/schemas/HashTag"
-        - $ref: "#/components/parameters/pageLimit"
-        - $ref: "#/components/parameters/pageSkip"
-      responses:
-        '200':
-          description: Успешная операция
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QueryPostResponseModel'
-        '400':
-          description: Ошибка при выполнении операции
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorProblemDetails'
-        '500':
-          description: Ошибка при выполнении операции
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
-                
   /v1/raiting/like:
     put:
       tags:
@@ -183,13 +143,7 @@ paths:
       operationId: like
       summary: Нравится запись
       parameters:
-        - name: postId
-          in: path
-          description: Идентификатор записи
-          required: true
-          schema:
-            type: string
-            maxLength: 36
+        - $ref: "#/components/parameters/postId"
       responses:
         '204':
           description: Успешная операция
@@ -212,13 +166,7 @@ paths:
       operationId: dislike
       summary: Не нравится запись
       parameters:
-        - name: postId
-          in: path
-          description: Идентификатор записи
-          required: true
-          schema:
-            type: string
-            maxLength: 36
+        - $ref: "#/components/parameters/postId"
       responses:
         '204':
           description: Успешная операция
@@ -237,16 +185,18 @@ paths:
 
 components:
   parameters:
+    postId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+        description: 'Идентификатор записи'
     pageSkip:
       name: pageSkip
       in: query
       description: Смещение числа записей
-      schema: 
-        type: integer
-    pageLimit:
-      name: pageLimit
-      in: query
-      description: Максимальное число записей в ответе
       schema: 
         type: integer
 
@@ -278,13 +228,17 @@ components:
       properties:
         id:
           type: string
-          maxLength: 36
+          format: uuid
       additionalProperties: false
     Post:
       required:
+        - id
         - text
       type: object
       properties:
+        id:
+          type: string
+          format: uuid
         text:
           type: string
           minLength: 2
@@ -309,10 +263,10 @@ components:
     PaginationResponse:
       type: object
       properties:
-        totalPages:
-          type: number
+        # totalPages:
+        #   type: integer
         currentPage:
-          type: number
+          type: integer
     ProblemDetails:
       required:
         - title

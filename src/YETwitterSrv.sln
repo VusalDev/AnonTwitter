@@ -20,12 +20,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{996107CB-144
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4DAD1A9A-C8FA-42F8-9C00-59795B15E63A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YETwitter.Identity.Web.Tests", "..\tests\YETwitter.Identity.Web.Tests\YETwitter.Identity.Web.Tests.csproj", "{C50079B6-9E3B-442D-B6DF-42E22B2185C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YETwitter.Identity.Web.Tests", "..\tests\YETwitter.Identity.Web.Tests\YETwitter.Identity.Web.Tests.csproj", "{C50079B6-9E3B-442D-B6DF-42E22B2185C2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "api-docs", "api-docs", "{4B63844B-9EE1-4857-B709-CFB8AE00E3A3}"
 	ProjectSection(SolutionItems) = preProject
 		..\swagger\identity-api-swagger.yaml = ..\swagger\identity-api-swagger.yaml
+		..\api-docs\post-api-swagger.yaml = ..\api-docs\post-api-swagger.yaml
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YETwitter.Posts.Web", "YETwitter.Posts.Web\YETwitter.Posts.Web.csproj", "{325B5CBC-0BE7-4841-BF14-D845BCBEFAE7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YETwitter.Posts.Web.Tests", "..\tests\YETwitter.Posts.Web.Tests\YETwitter.Posts.Web.Tests.csproj", "{2BCC1844-DA97-4027-85DD-08A181ED7D1D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YETwitter.Tests.Common", "..\tests\YETwitter.Tests.Common\YETwitter.Tests.Common.csproj", "{C6CD1BA8-716A-46F5-A0A8-9DEEEB1ECE3D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +56,18 @@ Global
 		{C50079B6-9E3B-442D-B6DF-42E22B2185C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C50079B6-9E3B-442D-B6DF-42E22B2185C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C50079B6-9E3B-442D-B6DF-42E22B2185C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{325B5CBC-0BE7-4841-BF14-D845BCBEFAE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{325B5CBC-0BE7-4841-BF14-D845BCBEFAE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{325B5CBC-0BE7-4841-BF14-D845BCBEFAE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{325B5CBC-0BE7-4841-BF14-D845BCBEFAE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BCC1844-DA97-4027-85DD-08A181ED7D1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BCC1844-DA97-4027-85DD-08A181ED7D1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BCC1844-DA97-4027-85DD-08A181ED7D1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BCC1844-DA97-4027-85DD-08A181ED7D1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6CD1BA8-716A-46F5-A0A8-9DEEEB1ECE3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6CD1BA8-716A-46F5-A0A8-9DEEEB1ECE3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6CD1BA8-716A-46F5-A0A8-9DEEEB1ECE3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6CD1BA8-716A-46F5-A0A8-9DEEEB1ECE3D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -58,6 +77,9 @@ Global
 		{35ED28F3-0A8E-4C54-BEF8-97F6AD8C9694} = {996107CB-144A-4900-A165-6CBF97B4D6FA}
 		{9991DEA4-C67A-434A-B4BE-870B364FCB26} = {996107CB-144A-4900-A165-6CBF97B4D6FA}
 		{C50079B6-9E3B-442D-B6DF-42E22B2185C2} = {4DAD1A9A-C8FA-42F8-9C00-59795B15E63A}
+		{325B5CBC-0BE7-4841-BF14-D845BCBEFAE7} = {996107CB-144A-4900-A165-6CBF97B4D6FA}
+		{2BCC1844-DA97-4027-85DD-08A181ED7D1D} = {4DAD1A9A-C8FA-42F8-9C00-59795B15E63A}
+		{C6CD1BA8-716A-46F5-A0A8-9DEEEB1ECE3D} = {4DAD1A9A-C8FA-42F8-9C00-59795B15E63A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DE90670C-3FCB-4C05-9A83-6F8BF9307346}

@@ -7,8 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-using YETwitter.Identity.Web.Configuration;
-using YETwitter.Identity.Web.Models;
+using YETwitter.Web.Common.Configuration;
 
 namespace YETwitter.Identity.Web.Controllers;
 
@@ -95,7 +94,7 @@ public class AuthController : AuthControllerBase
 
         var username = HttpContext.User?.Identity?.Name ?? throw new InvalidOperationException("User not logged in");
         var user = await _userManager.FindByNameAsync(username);
-        if(user == null) 
+        if (user == null)
             return Unauthorized();
 
         var result = await _userManager.ChangePasswordAsync(user, model.Password, model.NewPassword);

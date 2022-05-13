@@ -65,6 +65,19 @@ services:
      - elasticsearch
     networks:
      - yetwitter
+    
+  post.api:
+    container_name: post-api
+    build:
+      context: .
+      dockerfile: YETwitter.Posts.Web/Dockerfile    
+    ports:
+      - 10003:80
+      # - 11003:443
+    depends_on:
+     - elasticsearch
+    networks:
+     - yetwitter
   
 networks:
   yetwitter:

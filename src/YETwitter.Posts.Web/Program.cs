@@ -5,15 +5,14 @@ using CorrelationId.DependencyInjection;
 using Hellang.Middleware.ProblemDetails;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 
 using System.Reflection;
 
-using YETwitter.Identity.Web.Data;
+using YETwitter.Posts.Web.Data;
+using YETwitter.Posts.Web.Services;
 using YETwitter.Web.Common;
 using YETwitter.Web.Common.Configuration;
 
@@ -21,13 +20,6 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var host = builder.Host;
 var services = builder.Services;
-
-// Add services to the container.
-var jwtSection = configuration.GetSection("JWT");
-services.AddOptions<JwtOptions>()
-    .Bind(jwtSection)
-    .ValidateDataAnnotations()
-    .ValidateOnStart();
 
 // logging
 host.UseSerilog(configuration, $"{Assembly.GetExecutingAssembly().GetName().Name?.ToLower().Replace(".", "-")}");
@@ -53,26 +45,13 @@ services.AddProblemDetails(opts =>
 // For Entity Framework
 services
     .AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(configuration.GetConnectionString("IdentityDb"),
+    options.UseSqlServer(configuration.GetConnectionString("PostsDb"),
     sqlServerOptionsAction: sqlOptions =>
     {
         //sqlOptions.MigrationsAssembly(typeof(Program).GetTypeInfo().Assembly.GetName().Name);
         //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
         sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
     }));
-
-// For Identity
-services
-    .AddIdentity<IdentityUser, IdentityRole>(options =>
-    {
-        options.Password.RequireDigit = false;
-        options.Password.RequiredLength = 6;
-        options.Password.RequireNonAlphanumeric = false;
-        options.Password.RequireUppercase = false;
-        options.Password.RequireLowercase = false;
-    })
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
 
 // Adding Authentication
 services
@@ -84,7 +63,9 @@ services
     })
     .AddJwtBearer(options =>
     {
-        var jwtOptions = jwtSection.Get<JwtOptions>();
+        var jwtOptions = new JwtOptions();
+        configuration.GetSection("JWT").Bind(jwtOptions);
+
         options.SaveToken = true;
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters()
@@ -105,13 +86,14 @@ services.AddControllers(options =>
 
 services.AddHealthChecks()
     .AddCheck("self", () => HealthCheckResult.Healthy())
-    .AddSqlServer(configuration.GetConnectionString("IdentityDb"),
-        name: "IdentityDB-check",
-        tags: new string[] { "IdentityDB" });
+    .AddSqlServer(configuration.GetConnectionString("PostsDb"),
+        name: "PostsDb-check",
+        tags: new string[] { "PostsDb" });
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-//services.AddEndpointsApiExplorer();
-//services.AddSwaggerGen();
+services.Configure<PostServiceOptions>(configuration.GetSection("Post"));
+
+services.AddScoped<IPostService, PostsService>();
+services.AddScoped<IDatabaseService, DatabaseService>();
 
 var app = builder.Build();
 
@@ -119,8 +101,6 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-    //app.UseSwagger();
-    //app.UseSwaggerUI();
 }
 
 app.UseSerilogRequestLogging();

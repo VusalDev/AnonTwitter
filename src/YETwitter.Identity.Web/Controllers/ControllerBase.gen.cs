@@ -23,15 +23,15 @@ namespace YETwitter.Identity.Web.Controllers
     public abstract class AuthControllerBase : Microsoft.AspNetCore.Mvc.ControllerBase
     {
         /// <returns>Успешный вход</returns>
-        [Microsoft.AspNetCore.Mvc.HttpPost, Microsoft.AspNetCore.Mvc.Route("v1/auth/login")]
+        [Microsoft.AspNetCore.Mvc.HttpPost, Microsoft.AspNetCore.Mvc.Route("v1/auth/login", Name = "login")]
         public abstract System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.ActionResult<TokenDataModel>> Login([Microsoft.AspNetCore.Mvc.FromBody] [Microsoft.AspNetCore.Mvc.ModelBinding.BindRequired] LoginModel body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <returns>Успешная операция</returns>
-        [Microsoft.AspNetCore.Mvc.HttpPost, Microsoft.AspNetCore.Mvc.Route("v1/auth/register")]
+        [Microsoft.AspNetCore.Mvc.HttpPost, Microsoft.AspNetCore.Mvc.Route("v1/auth/register", Name = "register")]
         public abstract System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.ActionResult<ResponseModel>> Register([Microsoft.AspNetCore.Mvc.FromBody] [Microsoft.AspNetCore.Mvc.ModelBinding.BindRequired] RegisterModel body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <returns>Успешная операция</returns>
-        [Microsoft.AspNetCore.Mvc.HttpPost, Microsoft.AspNetCore.Mvc.Route("v1/auth/change-password")]
+        [Microsoft.AspNetCore.Mvc.HttpPost, Microsoft.AspNetCore.Mvc.Route("v1/auth/change-password", Name = "changePassword")]
         public abstract System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.ActionResult<ResponseModel>> ChangePassword([Microsoft.AspNetCore.Mvc.FromBody] [Microsoft.AspNetCore.Mvc.ModelBinding.BindRequired] ChangePasswordModel body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
