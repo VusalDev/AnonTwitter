@@ -12,6 +12,6 @@ Roadmap:
 - [ ] - комментарии 
 - [ ] - пользовательский профиль
 
- ![Login Diagram](https://raw.githubusercontent.com/VusalDev/YETwitter/develop/diagrams/login.puml)
- ![Register Diagram](https://raw.githubusercontent.com/VusalDev/YETwitter/develop/diagrams/register.puml)
- ![Create Post Diagram](https://raw.githubusercontent.com/VusalDev/YETwitter/develop/diagrams/create-post.puml)
+ ![Login Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/VusalDev/YETwitter/develop/diagrams/login.puml)
+ ![Register Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/VusalDev/YETwitter/develop/diagrams/register.puml)
+ ![Create Post Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/VusalDev/YETwitter/develop/diagrams/create-post.puml)
