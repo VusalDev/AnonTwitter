@@ -1,0 +1,45 @@
+@startuml CreatePost
+title
+== Create Post
+end title
+skinparam BoxPadding 20
+
+actor cl as "Client"
+
+box Browser
+participant front as "Front App"
+end box
+
+box Backend
+participant post_srv as "Posts Service"
+participant ntf_srv as "Notification Service"
+end box
+
+box Storage
+database post_db as "Posts DB"
+database ntf_db as "Notification DB"
+end box
+
+cl -> front: Enter some text
+front -> post_srv: Send data
+
+alt data validation failed
+    front <- post_srv: failed result
+    cl <- front: Show validation errors
+else data validation success
+    post_srv -> post_db: Save parsed data
+    post_srv <-- post_db
+    post_srv -> ntf_srv: Send post created event
+    post_srv <-- ntf_srv
+    front <- post_srv: success result
+    cl <- front: Redirect created post page
+end
+
+== Notification Service ==
+ntf_srv -> ntf_db: Get subscribers
+ntf_srv <-- ntf_db
+
+alt subscribers found
+    front <- ntf_srv: Push notification
+    cl <-- front
+end

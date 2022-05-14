@@ -1,0 +1,49 @@
+@startuml Register
+title 
+== Auth Register
+end title
+skinparam BoxPadding 20
+
+actor cl as "Client"
+
+box Browser
+   participant front as "Front App"
+   participant browserstorage as "<i>Local Storage" #LightGray
+end box
+
+box Backend   
+    participant identity as "Identity Service"
+    database db as "Identity DB"
+end box
+
+
+== Check Token ==
+cl -> front: Request some page
+front -> browserstorage: Get JWT token data
+front <-- browserstorage
+
+alt token not found or expired
+    cl <-- front: Show register page
+else token valid
+    cl <-- front: Show requested page
+end
+
+== Register page ==   
+cl -> front: Enter creds 
+front -> identity: Send creds
+
+alt creds validation failed
+    front <- identity: failed result
+    cl <- front: Show validation errors
+else creds validation success
+    identity -> db: Check user exist
+    identity <-- db
+
+    alt user not exist
+        front <- identity: success result
+        cl <- front: Show login page
+    else user exist
+        front <- identity: failed result
+        cl <- front: Show errors
+    end
+end
