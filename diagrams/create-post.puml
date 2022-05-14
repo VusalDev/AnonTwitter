@@ -1,4 +1,4 @@
-@startuml CreatePost
+@startuml
 title
 == Create Post
 end title
@@ -43,3 +43,4 @@ alt subscribers found
     front <- ntf_srv: Push notification
     cl <-- front
 end
+@enduml

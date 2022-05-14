@@ -1,4 +1,4 @@
-@startuml Register
+@startuml
 title 
 == Auth Register
 end title
@@ -47,3 +47,4 @@ else creds validation success
         cl <- front: Show errors
     end
 end
+@enduml
