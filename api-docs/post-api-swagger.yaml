@@ -1,0 +1,294 @@
+openapi: 3.0.1
+info:
+  title: YETwitter.Posts.Web
+  version: '1.0'
+tags:
+  - name: Posts API
+    description: >
+      Сервис редактирования постов и рейтинга постов пользователей
+      
+servers:
+  - url: 'https://localhost/api'
+    description: URL for testing
+
+paths:
+  /v1/post:                
+    get:
+      tags:
+        - post
+      operationId: queryPosts
+      summary: Искать записи
+      parameters:
+        - name: query
+          in: query
+          description: Поисковая строка
+          schema:
+            type: string
+        - name: userId
+          in: query
+          description: Идентификатор пользователя
+          schema:
+            type: string
+        - name: hashTag
+          in: query
+          schema:
+            $ref: "#/components/schemas/HashTag"
+        - $ref: "#/components/parameters/pageSkip"
+      responses:
+        '200':
+          description: Успешная операция
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryPostResponseModel'
+        '400':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorProblemDetails'
+        '500':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+
+    put:
+      tags:
+        - post
+      operationId: create
+      summary: Создать запись
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePostModel'
+      responses:
+        '200':
+          description: Успешная операция
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePostResponseModel'
+        '400':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorProblemDetails'
+        '500':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+                                
+  /v1/post/{id}:
+    get:
+      tags:
+        - post
+      operationId: getById
+      summary: Получить запись
+      parameters:
+        - $ref: "#/components/parameters/postId"
+      responses:
+        '200':
+          description: Успешная операция
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorProblemDetails'
+        '500':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+
+    delete:
+      tags:
+        - post
+      operationId: delete
+      summary: Удалить запись
+      parameters:
+        - $ref: "#/components/parameters/postId"
+      responses:
+        '204':
+          description: Успешная операция
+        '400':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorProblemDetails'
+        '500':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+
+  /v1/raiting/like:
+    put:
+      tags:
+        - raiting
+      operationId: like
+      summary: Нравится запись
+      parameters:
+        - $ref: "#/components/parameters/postId"
+      responses:
+        '204':
+          description: Успешная операция
+        '400':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorProblemDetails'
+        '500':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+
+    delete:
+      tags:
+        - raiting
+      operationId: dislike
+      summary: Не нравится запись
+      parameters:
+        - $ref: "#/components/parameters/postId"
+      responses:
+        '204':
+          description: Успешная операция
+        '400':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorProblemDetails'
+        '500':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+
+components:
+  parameters:
+    postId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+        description: 'Идентификатор записи'
+    pageSkip:
+      name: pageSkip
+      in: query
+      description: Смещение числа записей
+      schema: 
+        type: integer
+
+  schemas:
+    QueryPostResponseModel:
+      allOf:
+        - $ref: '#/components/schemas/PaginationResponse'
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Post'
+      additionalProperties: false
+    CreatePostModel:
+      required:
+        - rawtext
+      type: object
+      properties:
+        rawtext:
+          type: string
+          minLength: 2
+          maxLength: 140
+      additionalProperties: false
+    CreatePostResponseModel:
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      additionalProperties: false
+    Post:
+      required:
+        - id
+        - text
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        text:
+          type: string
+          minLength: 2
+          maxLength: 140
+        hashtags:
+          type: array
+          items:
+            $ref: '#/components/schemas/HashTag'
+        appeals:
+          type: array
+          items:
+            $ref: '#/components/schemas/Appeal'
+      additionalProperties: false
+    HashTag:
+      type: string
+      description: 'Хэштег'
+      example: '#elonmusk'
+    Appeal:
+      type: string
+      description: 'Ссылка на пользователя'
+      example: '@elonmusk'
+    PaginationResponse:
+      type: object
+      properties:
+        # totalPages:
+        #   type: integer
+        currentPage:
+          type: integer
+    ProblemDetails:
+      required:
+        - title
+        - status
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        detail:
+          type: string
+        status:
+          type: integer
+        traceId:
+          type: string
+      additionalProperties: false
+    ErrorProblemDetails:
+      allOf:
+        - $ref: '#/components/schemas/ProblemDetails'
+        - type: object
+          properties:
+            errors:
+              type: object
+      additionalProperties: false

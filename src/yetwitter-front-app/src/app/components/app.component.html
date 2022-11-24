@@ -1,0 +1,29 @@
+<header>
+  <div class="header-row">
+    <a class="header-logo" routerLink="/"></a>
+    <div class="header-search">
+      <input type="text" placeholder="fuuu" />
+    </div>
+    <nav class="header-menu">
+      <fa-icon [icon]="faEllipsis"></fa-icon>
+    </nav>
+  </div>
+  <div class="header-row login-btns">
+    <button class="btn" (click)="openLoginDialog()">Войти</button>
+    <button class="btn btn-accent" (click)="openRegisterDialog()">Зарегистрироваться</button>
+  </div>
+</header>
+
+<main>
+  <router-outlet></router-outlet>
+</main>
+
+<footer>
+  <div class="footer-info">
+    <span>Сервис, где можно выпустить пар. Пщщщщ...</span>
+  </div>
+
+  <div class="footer-copyright">
+    <span>Copyright &copy; VusalStudio 2022</span>
+  </div>
+</footer>

@@ -1,0 +1,198 @@
+openapi: 3.0.1
+info:
+  title: YETwitter.Identity.Web
+  version: '1.0'
+tags:
+  - name: Identity API
+    description: >
+      Сервис авторизации и хранения информации пользователей
+      
+servers:
+  - url: 'https://localhost/api'
+    description: URL for testing
+
+paths:
+  /v1/auth/login:
+    post:
+      tags:
+        - auth
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginModel'
+      responses:
+        '200':
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenDataModel'
+        '400':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorProblemDetails'
+        '500':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /v1/auth/register:
+    post:
+      tags:
+        - auth
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterModel'
+      responses:
+        '200':
+          description: Успешная операция
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseModel'
+        '400':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorProblemDetails'
+        '500':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /v1/auth/change-password:
+    post:
+      tags:
+        - auth
+      operationId: changePassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordModel'
+      responses:
+        '200':
+          description: Успешная операция
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseModel'
+        '400':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorProblemDetails'
+        '500':
+          description: Ошибка при выполнении операции
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+components:
+  schemas:
+    ChangePasswordModel:
+      required:
+        - newPassword
+        - password
+      type: object
+      properties:
+        password:
+          type: string
+          format: password
+          minLength: 6
+        newPassword:
+          type: string
+          format: password
+          minLength: 6
+      additionalProperties: false
+    LoginModel:
+      required:
+        - username
+        - password
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 2
+        password:
+          type: string
+          format: password
+          minLength: 6
+        rememberMe:
+          type: boolean
+      additionalProperties: false
+    RegisterModel:
+      required:
+        - username
+        - password
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 2
+        password:
+          type: string
+          format: password
+          minLength: 6
+      additionalProperties: false
+    ResponseModel:
+      required:
+        - status
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+      additionalProperties: false
+    TokenDataModel:
+      required:
+        - token
+        - validTo
+      type: object
+      properties:
+        token:
+          type: string
+        validTo:
+          type: string
+          format: date
+      additionalProperties: false
+    ProblemDetails:
+      required:
+        - title
+        - status
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        detail:
+          type: string
+        status:
+          type: integer
+        traceId:
+          type: string
+      additionalProperties: false
+    ErrorProblemDetails:
+      allOf:
+        - $ref: '#/components/schemas/ProblemDetails'
+        - type: object
+          properties:
+            errors:
+              type: object
+      additionalProperties: false

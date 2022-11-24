@@ -1,0 +1,31 @@
+<div class="popup-window">
+    <div class="popup-header">
+        <div class="row">
+            <fa-icon [icon]="faXmark" mat-dialog-close class="close"></fa-icon>
+            <!-- <div class="logo"></div> -->
+        </div>
+        <div class="row">
+            <div class="title">
+                <h1>Регистрация в Бомбиттер</h1>
+            </div>
+        </div>
+    </div>
+    <div class="popup-body">
+        <form [formGroup]="form">
+            <div>
+                <div class="form-control">
+                    <input placeholder="Логин" name="username" formControlName="username">
+                </div>
+                <div class="form-control">
+                    <input placeholder="Пароль" name="password" formControlName="password">
+                </div>
+                <div class="form-control">
+                    <span class="errorText">{{errorText}}</span>
+                </div>
+            </div>
+            <div mat-dialog-actions>
+                <button type="button" class="btn btn-default" (click)="register()">Зарегистрироваться</button>
+            </div>
+        </form>
+    </div>
+</div>
